@@ -1,0 +1,14 @@
+DECLARE
+    CURSOR roll_cursor IS
+        SELECT * FROM N_RollCall;
+BEGIN
+    FOR record IN roll_cursor LOOP
+        BEGIN
+            INSERT INTO O_RollCall (RollNo, Name, Attendance)
+            VALUES (record.RollNo, record.Name, record.Attendance);
+        EXCEPTION
+            WHEN DUP_VAL_ON_INDEX THEN
+                DBMS_OUTPUT.PUT_LINE('Skipping duplicate record: ' || record.RollNo);
+        END;
+    END LOOP;
+END;
