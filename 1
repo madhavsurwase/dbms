@@ -1,0 +1,31 @@
+-- Create Customer and Account tables
+CREATE TABLE Customer (
+    C_id INT PRIMARY KEY,
+    cname VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Account (
+    Acc_id INT PRIMARY KEY,
+    C_id INT,
+    Acc_Type VARCHAR(20),
+    amount DECIMAL(10, 2),
+    FOREIGN KEY (C_id) REFERENCES Customer(C_id)
+);
+
+-- Queries
+-- 1
+SELECT cname, Acc_Type, amount 
+FROM Customer 
+JOIN Account ON Customer.C_id = Account.C_id 
+WHERE Acc_Type = 'saving';
+
+-- 2
+SELECT * FROM Customer NATURAL JOIN Account;
+SELECT * FROM Customer LEFT JOIN Account ON Customer.C_id = Account.C_id;
+SELECT * FROM Customer RIGHT JOIN Account ON Customer.C_id = Account.C_id;
+
+-- 3
+SELECT * FROM Customer WHERE city = (SELECT city FROM Customer WHERE cname = 'pooja');
+
+-- Add more queries for questions 4, 5, 6, and 7 as per the document.
