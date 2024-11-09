@@ -1,0 +1,44 @@
+-- Assuming tables: Account, Loan, Customer, Depositor, Borrower
+
+-- 1. Branch names from loan relation
+SELECT DISTINCT branch_name FROM Loan;
+
+-- 2. Loan numbers from Akurdi branch with loan amount > 12000
+SELECT loan_no FROM Loan WHERE branch_name = 'Akurdi' AND amount > 12000;
+
+-- 3. Customers with loans
+SELECT Borrower.cust_name, Borrower.loan_no, Loan.amount 
+FROM Borrower JOIN Loan ON Borrower.loan_no = Loan.loan_no;
+
+-- 4. Alphabetical list of customers with loans from Akurdi branch
+SELECT cust_name FROM Borrower 
+JOIN Loan ON Borrower.loan_no = Loan.loan_no 
+WHERE Loan.branch_name = 'Akurdi' ORDER BY cust_name;
+
+-- 5. Customers with account or loan or both
+SELECT cust_name FROM Customer 
+WHERE cust_name IN (SELECT cust_name FROM Depositor) 
+OR cust_name IN (SELECT cust_name FROM Borrower);
+
+-- 6. Customers with both account and loan
+SELECT cust_name FROM Customer 
+WHERE cust_name IN (SELECT cust_name FROM Depositor) 
+AND cust_name IN (SELECT cust_name FROM Borrower);
+
+-- 7. Customers with only an account
+SELECT cust_name FROM Depositor 
+WHERE cust_name NOT IN (SELECT cust_name FROM Borrower);
+
+-- 8. Average balance at Akurdi branch
+SELECT AVG(balance) FROM Account WHERE branch_name = 'Akurdi';
+
+-- 9. Average balance per branch
+SELECT branch_name, AVG(balance) FROM Account GROUP BY branch_name;
+
+-- 10. Number of depositors per branch
+SELECT branch_name, COUNT(*) FROM Depositor 
+JOIN Account ON Depositor.acc_no = Account.Acc_no 
+GROUP BY branch_name;
+
+-- 11. Branches with average balance > 12000
+SELECT branch_name FROM Account GROUP BY branch_name HAVING AVG(balance) > 12000;
