@@ -1,0 +1,12 @@
+CREATE OR REPLACE PROCEDURE proc_Grade (p_marks IN NUMBER, p_class OUT VARCHAR2) IS
+BEGIN
+    IF p_marks >= 990 AND p_marks <= 1500 THEN
+        p_class := 'Distinction';
+    ELSIF p_marks BETWEEN 900 AND 989 THEN
+        p_class := 'First Class';
+    ELSIF p_marks BETWEEN 825 AND 899 THEN
+        p_class := 'Higher Second Class';
+    ELSE
+        p_class := 'Fail';
+    END IF;
+END proc_Grade;
