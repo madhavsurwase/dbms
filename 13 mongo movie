@@ -1,0 +1,13 @@
+use your_database;  // replace 'your_database' with your database name
+
+// Insert data
+db.movies.insertMany([
+    { name: "Movie1", type: "action", budget: 1000000, producer: { name: "producer1", address: "PUNE" } },
+    { name: "Movie2", type: "drama", budget: 200000, producer: { name: "producer2", address: "MUMBAI" } }
+]);
+
+// Queries
+db.movies.find({ budget: { $gt: 100000 } }, { name: 1, _id: 0 });
+db.movies.find({ "producer.address": "PUNE" }, { "producer.name": 1, _id: 0 });
+db.movies.updateMany({ type: "action" }, { $set: { type: "horror" } });
+db.movies.find({ "producer.name": "producer1" }, { "producer.address": 1, _id: 0 });
