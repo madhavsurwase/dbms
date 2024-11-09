@@ -1,0 +1,11 @@
+use department;
+db.createCollection("teacher");
+
+// Aggregation
+db.teacher.aggregate([{ $group: { _id: "$department", avgSalary: { $avg: "$salary" } } }]);
+db.teacher.aggregate([{ $group: { _id: "$department", count: { $sum: 1 } } }]);
+db.teacher.aggregate([{ $group: { _id: "$department", minSalary: { $min: "$salary" } } }]);
+
+// Indexing
+db.teacher.createIndex({ name: 1 });
+db.teacher.dropIndex("name_1");
