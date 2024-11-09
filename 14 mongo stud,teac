@@ -1,0 +1,8 @@
+use your_database;  // replace 'your_database' with your database name
+
+// Queries
+db.teachers.find({ dno: 2, salary: { $gte: 10000 } });
+db.students.find({ $or: [{ Roll_no: 2 }, { Sname: "xyz" }] });
+db.students.updateOne({ Roll_No: 5 }, { $set: { Sname: "UpdatedName" } });
+db.students.deleteMany({ Class: "FE" });
+db.students.createIndex({ Roll_No: 1 });
