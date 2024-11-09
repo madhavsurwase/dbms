@@ -1,0 +1,27 @@
+DECLARE
+    v_roll_no NUMBER;
+    v_name_of_book VARCHAR2(50);
+    v_days NUMBER;
+    v_fine NUMBER;
+BEGIN
+    -- Accept inputs
+    v_roll_no := &roll_no;
+    v_name_of_book := '&name_of_book';
+
+    -- Calculate days since issue
+    SELECT (SYSDATE - DateofIssue) INTO v_days FROM Borrower WHERE Rollin = v_roll_no AND NameofBook = v_name_of_book;
+
+    IF v_days BETWEEN 15 AND 30 THEN
+        v_fine := v_days * 5;
+    ELSIF v_days > 30 THEN
+        v_fine := v_days * 50;
+    ELSE
+        v_fine := 0;
+    END IF;
+
+    IF v_fine > 0 THEN
+        INSERT INTO Fine (Roll_no, Date, Amt) VALUES (v_roll_no, SYSDATE, v_fine);
+    END IF;
+
+    UPDATE Borrower SET Status = 'R' WHERE Rollin = v_roll_no AND NameofBook = v_name_of_book;
+END;
