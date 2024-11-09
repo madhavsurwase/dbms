@@ -1,0 +1,19 @@
+use your_database;  // replace 'your_database' with your database name
+
+db.city.mapReduce(
+    function() { emit(this.state, parseInt(this.population)); },
+    function(key, values) { return Array.sum(values); },
+    { out: "statewise_population" }
+);
+
+db.city.mapReduce(
+    function() { emit(this.city, parseInt(this.population)); },
+    function(key, values) { return Array.sum(values); },
+    { out: "citywise_population" }
+);
+
+db.city.mapReduce(
+    function() { emit(this.type, parseInt(this.population)); },
+    function(key, values) { return Array.sum(values); },
+    { out: "typewise_population" }
+);
