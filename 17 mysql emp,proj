@@ -1,0 +1,14 @@
+-- Employee queries
+SELECT DISTINCT location FROM Employee;
+SELECT MAX(salary), MIN(salary) FROM Employee;
+SELECT * FROM Employee ORDER BY salary;
+SELECT name FROM Employee WHERE city IN ('Nasik', 'Pune');
+SELECT name FROM Employee WHERE commission IS NULL;
+UPDATE Employee SET city = 'Nashik' WHERE name = 'Amit';
+SELECT * FROM Employee WHERE name LIKE 'A%';
+SELECT COUNT(*) FROM Employee WHERE city = 'Mumbai';
+SELECT city, COUNT(*) FROM Employee GROUP BY city;
+SELECT DISTINCT city FROM (SELECT city FROM Employee UNION SELECT city FROM Project);
+SELECT city, MIN(salary) FROM Employee GROUP BY city;
+SELECT city, MAX(salary) FROM Employee GROUP BY city HAVING MAX(salary) > 26000;
+DELETE FROM Employee WHERE salary > 30000;
