@@ -1,0 +1,24 @@
+-- Stored Function to determine grade based on marks
+CREATE OR REPLACE FUNCTION func_Grade (p_marks IN NUMBER) RETURN VARCHAR2 IS
+    v_class VARCHAR2(50);
+BEGIN
+    IF p_marks >= 990 AND p_marks <= 1500 THEN
+        v_class := 'Distinction';
+    ELSIF p_marks BETWEEN 900 AND 989 THEN
+        v_class := 'First Class';
+    ELSIF p_marks BETWEEN 825 AND 899 THEN
+        v_class := 'Higher Second Class';
+    ELSE
+        v_class := 'Fail';
+    END IF;
+    RETURN v_class;
+END func_Grade;
+
+-- Example usage of the function
+DECLARE
+    v_marks NUMBER := &marks;
+    v_grade VARCHAR2(50);
+BEGIN
+    v_grade := func_Grade(v_marks);
+    DBMS_OUTPUT.PUT_LINE('Grade: ' || v_grade);
+END;
