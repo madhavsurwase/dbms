@@ -1,3 +1,4 @@
+1.Procedure Creation:
 CREATE OR REPLACE PROCEDURE proc_Grade (p_marks IN NUMBER, p_class OUT VARCHAR2) IS
 BEGIN
     IF p_marks >= 990 AND p_marks <= 1500 THEN
@@ -10,3 +11,22 @@ BEGIN
         p_class := 'Fail';
     END IF;
 END proc_Grade;
+
+
+2.Block to Use Procedure:
+
+DECLARE
+    v_name VARCHAR2(50);
+    v_total_marks NUMBER;
+    v_class VARCHAR2(50);
+BEGIN
+    -- Set values for name and marks
+    v_name := '&name';
+    v_total_marks := &total_marks;
+
+    -- Call procedure to calculate grade
+    proc_Grade(v_total_marks, v_class);
+
+    -- Insert into Result table
+    INSERT INTO Result (Name, Class) VALUES (v_name, v_class);
+END;
