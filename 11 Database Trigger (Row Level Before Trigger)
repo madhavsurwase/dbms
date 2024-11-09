@@ -1,0 +1,6 @@
+CREATE TRIGGER before_update_delete ON Library
+BEFORE UPDATE OR DELETE
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (old_value) VALUES (OLD.value);  -- Adjust based on actual columns
+END;
