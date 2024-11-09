@@ -1,0 +1,17 @@
+-- Assuming tables: teaches, student, instructor, course
+
+-- 1. Instructor names semester-wise
+SELECT instructor.name, teaches.semester, teaches.course_id
+FROM instructor
+JOIN teaches ON instructor.T_ID = teaches.T_ID
+ORDER BY teaches.semester;
+
+-- 2. Create view for student details
+CREATE VIEW StudentView AS
+SELECT S_ID, name, dept_name, tot_cred FROM student;
+
+-- 3. Rename column in student table
+ALTER TABLE student CHANGE dept_name department_name VARCHAR(50);
+
+-- 4. Delete students where department is NULL
+DELETE FROM student WHERE dept_name IS NULL;
