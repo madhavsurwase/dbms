@@ -1,0 +1,6 @@
+use your_database;  // replace 'your_database' with your database name
+
+db.orderinfo.updateMany({}, { $set: { Age: 0 } });
+db.orderinfo.createIndex({ cust_id: 1, price: 1 }, { unique: true });
+db.orderinfo.aggregate([{ $group: { _id: "$status", avgPrice: { $avg: "$price" } } }]);
+db.orderinfo.updateMany({ status: "B" }, { $set: { cust_name: "Updated Name" } });
