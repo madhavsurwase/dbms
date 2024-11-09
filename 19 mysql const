@@ -1,0 +1,10 @@
+CREATE TABLE emp (
+    Eno INT PRIMARY KEY AUTO_INCREMENT,
+    Ename VARCHAR(50) NOT NULL,
+    Address VARCHAR(100) DEFAULT 'Nashik',
+    Joindate DATE,
+    Post VARCHAR(50)
+);
+INSERT INTO emp (Ename, Joindate) VALUES ('John', '2023-04-01');
+CREATE INDEX idx_ename ON emp(Ename);
+CREATE VIEW emp_view AS SELECT Ename, Salary FROM emp;
