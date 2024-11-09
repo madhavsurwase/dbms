@@ -1,0 +1,11 @@
+// Collection: orderinfo
+use your_database;  // replace 'your_database' with your database name
+
+// Queries
+db.orderinfo.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$cust_id", avgPrice: { $avg: "$price" } } }
+]);
+
+db.orderinfo.find({ price: { $gt: 100, $lt: 1000 } }, { _id: 0 });
+db.orderinfo.createIndex({ cust_id: 1 });
