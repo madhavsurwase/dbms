@@ -1,0 +1,9 @@
+use Institute;
+
+db.Students.aggregate([{ $group: { _id: "$subject", maxMarks: { $max: "$marks" } } }]);
+db.Students.aggregate([{ $group: { _id: "$subject", minMarks: { $min: "$marks" } } }]);
+db.Students.aggregate([{ $group: { _id: "$subject", totalMarks: { $sum: "$marks" } } }]);
+db.Students.aggregate([{ $group: { _id: "$subject", avgMarks: { $avg: "$marks" } } }]);
+db.Students.aggregate([{ $group: { _id: "$subject", firstRecord: { $first: "$$ROOT" } } }]);
+db.Students.aggregate([{ $group: { _id: "$subject", lastRecord: { $last: "$$ROOT" } } }]);
+db.Students.aggregate([{ $group: { _id: "$subject", count: { $sum: 1 } } }]);
