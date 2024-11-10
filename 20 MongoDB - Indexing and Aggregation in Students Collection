@@ -1,9 +1,78 @@
-use Institute;
+// 1. Create the collection
+use schoolDatabase;  // Switching to a new database
 
-db.Students.aggregate([{ $group: { _id: "$subject", maxMarks: { $max: "$marks" } } }]);
-db.Students.aggregate([{ $group: { _id: "$subject", minMarks: { $min: "$marks" } } }]);
-db.Students.aggregate([{ $group: { _id: "$subject", totalMarks: { $sum: "$marks" } } }]);
-db.Students.aggregate([{ $group: { _id: "$subject", avgMarks: { $avg: "$marks" } } }]);
-db.Students.aggregate([{ $group: { _id: "$subject", firstRecord: { $first: "$$ROOT" } } }]);
-db.Students.aggregate([{ $group: { _id: "$subject", lastRecord: { $last: "$$ROOT" } } }]);
-db.Students.aggregate([{ $group: { _id: "$subject", count: { $sum: 1 } } }]);
+db.createCollection("students");  // Create the students collection
+
+// 2. Insert some sample documents
+db.students.insertMany([
+  { Rollno: 1, name: 'Navin', subject: 'DMSA', marks: 78 },
+  { Rollno: 2, name: 'Anusha', subject: 'OSD', marks: 75 },
+  { Rollno: 3, name: 'Ravi', subject: 'TOC', marks: 69 },
+  { Rollno: 4, name: 'Veena', subject: 'TOC', marks: 70 },
+  { Rollno: 5, name: 'Pravini', subject: 'OSD', marks: 80 },
+  { Rollno: 6, name: 'Reena', subject: 'DMSA', marks: 50 },
+  { Rollno: 7, name: 'Geeta', subject: 'CN', marks: 90 },
+  { Rollno: 8, name: 'Akash', subject: 'CN', marks: 85 }
+]);
+
+// 3. Create a Single Index on the 'subject' field
+db.students.createIndex({ subject: 1 });
+
+// 4. Create a Compound Index on 'subject' and 'marks'
+db.students.createIndex({ subject: 1, marks: -1 });
+
+// 5. Create a Unique Index on 'Rollno'
+db.students.createIndex({ Rollno: 1 }, { unique: true });
+
+// 6. Show Index Information
+print("Index information:");
+db.students.getIndexes();  // Displaying all the indexes in the collection
+
+// 7. Remove an Index (Removing the compound index on subject and marks)
+db.students.dropIndex({ subject: 1, marks: -1 });
+
+// Aggregation Operations:
+
+// 8. Find Max marks of Each Subject
+print("Max marks of each subject:");
+db.students.aggregate([
+  { $group: { _id: "$subject", maxMarks: { $max: "$marks" } } }
+]).forEach(printjson);
+
+// 9. Find Min marks of Each Subject
+print("Min marks of each subject:");
+db.students.aggregate([
+  { $group: { _id: "$subject", minMarks: { $min: "$marks" } } }
+]).forEach(printjson);
+
+// 10. Find Sum of marks of Each Subject
+print("Sum of marks of each subject:");
+db.students.aggregate([
+  { $group: { _id: "$subject", totalMarks: { $sum: "$marks" } } }
+]).forEach(printjson);
+
+// 11. Find Avg marks of Each Subject
+print("Avg marks of each subject:");
+db.students.aggregate([
+  { $group: { _id: "$subject", avgMarks: { $avg: "$marks" } } }
+]).forEach(printjson);
+
+// 12. Find the first record for each subject
+print("First record of each subject:");
+db.students.aggregate([
+  { $sort: { subject: 1, marks: 1 } },
+  { $group: { _id: "$subject", firstRecord: { $first: "$$ROOT" } } }
+]).forEach(printjson);
+
+// 13. Find the last record for each subject
+print("Last record of each subject:");
+db.students.aggregate([
+  { $sort: { subject: 1, marks: -1 } },
+  { $group: { _id: "$subject", lastRecord: { $first: "$$ROOT" } } }
+]).forEach(printjson);
+
+// 14. Find the count of records for each subject
+print("Count of records for each subject:");
+db.students.aggregate([
+  { $group: { _id: "$subject", count: { $sum: 1 } } }
+]).forEach(printjson);
