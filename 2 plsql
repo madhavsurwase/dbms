@@ -1,27 +1,72 @@
 DECLARE
-    v_roll_no NUMBER;
-    v_name_of_book VARCHAR2(50);
-    v_days NUMBER;
-    v_fine NUMBER;
+    v_rollin     Borrower.Rollin%TYPE;
+    v_nameofbook Borrower.NameofBook%TYPE;
+    v_dateofissue Borrower.DateofIssue%TYPE;
+    v_status     Borrower.Status%TYPE;
+    v_fine_amt   NUMBER := 0;
+    v_days_late  NUMBER;
+    
+    -- Custom exception for book not found
+    ex_book_not_found EXCEPTION;
+    v_count NUMBER;
+
 BEGIN
-    -- Accept inputs
-    v_roll_no := &roll_no;
-    v_name_of_book := '&name_of_book';
+    -- Accept input from user
+    v_rollin := &rollin;
+    v_nameofbook := '&nameofbook';
 
-    -- Calculate days since issue
-    SELECT (SYSDATE - DateofIssue) INTO v_days FROM Borrower WHERE Rollin = v_roll_no AND NameofBook = v_name_of_book;
+    -- Check if the book exists in the Borrower table
+    SELECT COUNT(*) INTO v_count 
+    FROM Borrower 
+    WHERE Rollin = v_rollin 
+    AND NameofBook = v_nameofbook 
+    AND Status = 'I';
 
-    IF v_days BETWEEN 15 AND 30 THEN
-        v_fine := v_days * 5;
-    ELSIF v_days > 30 THEN
-        v_fine := v_days * 50;
+    IF v_count = 0 THEN
+        RAISE ex_book_not_found;
+    END IF;
+
+    -- Get the DateofIssue and Status of the book
+    SELECT DateofIssue, Status 
+    INTO v_dateofissue, v_status 
+    FROM Borrower 
+    WHERE Rollin = v_rollin 
+    AND NameofBook = v_nameofbook 
+    AND Status = 'I';
+
+    -- Calculate the number of days since the book was issued
+    v_days_late := TRUNC(SYSDATE - v_dateofissue);
+
+    -- Calculate fine based on the number of days late
+    IF v_days_late > 30 THEN
+        v_fine_amt := (v_days_late - 30) * 50 + (30 * 5); -- Rs. 50 per day after 30 days + Rs. 5 per day for the first 30 days
+    ELSIF v_days_late >= 15 THEN
+        v_fine_amt := v_days_late * 5; -- Rs. 5 per day if days are between 15 and 30
     ELSE
-        v_fine := 0;
+        v_fine_amt := 0; -- No fine if days are less than 15
     END IF;
 
-    IF v_fine > 0 THEN
-        INSERT INTO Fine (Roll_no, Date, Amt) VALUES (v_roll_no, SYSDATE, v_fine);
+    -- Update the status of the book to 'R' after submission
+    UPDATE Borrower 
+    SET Status = 'R' 
+    WHERE Rollin = v_rollin 
+    AND NameofBook = v_nameofbook;
+
+    -- Insert fine details into Fine table if applicable
+    IF v_fine_amt > 0 THEN
+        INSERT INTO Fine (Roll_no, Date, Amt) 
+        VALUES (v_rollin, SYSDATE, v_fine_amt);
     END IF;
 
-    UPDATE Borrower SET Status = 'R' WHERE Rollin = v_roll_no AND NameofBook = v_name_of_book;
+    DBMS_OUTPUT.PUT_LINE('Book returned successfully. Fine amount: ' || v_fine_amt);
+
+-- Exception handling
+EXCEPTION
+    WHEN ex_book_not_found THEN
+        DBMS_OUTPUT.PUT_LINE('Error: Book not found or already returned.');
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: No matching record found in Borrower table.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
+/
