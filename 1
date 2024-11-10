@@ -1,4 +1,4 @@
--- Create Customer and Account tables
+-- Step 1: Create the Customer and Account tables
 CREATE TABLE Customer (
     C_id INT PRIMARY KEY,
     cname VARCHAR(50),
@@ -8,24 +8,73 @@ CREATE TABLE Customer (
 CREATE TABLE Account (
     Acc_id INT PRIMARY KEY,
     C_id INT,
-    Acc_Type VARCHAR(20),
+    Acc_Type VARCHAR(50),
     amount DECIMAL(10, 2),
     FOREIGN KEY (C_id) REFERENCES Customer(C_id)
 );
 
--- Queries
--- 1
-SELECT cname, Acc_Type, amount 
+-- Step 2: Insert sample data
+INSERT INTO Customer (C_id, cname, city) VALUES 
+(1, 'Rahul', 'Mumbai'),
+(2, 'Pooja', 'Pune'),
+(3, 'Amit', 'Mumbai'),
+(4, 'Neha', 'Pune');
+
+INSERT INTO Account (Acc_id, C_id, Acc_Type, amount) VALUES
+(101, 1, 'saving', 5000.00),
+(102, 2, 'current', 7000.00),
+(103, 3, 'saving', 8000.00),
+(104, 4, 'current', 3000.00);
+
+-- Query 1: Show cname, Acc_Type, and amount of customers with a saving account
+SELECT Customer.cname, Account.Acc_Type, Account.amount
+FROM Customer
+JOIN Account ON Customer.C_id = Account.C_id
+WHERE Account.Acc_Type = 'saving';
+
+-- Query 2: Display data using Natural, Left, and Right Joins
+
+-- Natural Join
+SELECT * 
 FROM Customer 
-JOIN Account ON Customer.C_id = Account.C_id 
-WHERE Acc_Type = 'saving';
+NATURAL JOIN Account;
 
--- 2
-SELECT * FROM Customer NATURAL JOIN Account;
-SELECT * FROM Customer LEFT JOIN Account ON Customer.C_id = Account.C_id;
-SELECT * FROM Customer RIGHT JOIN Account ON Customer.C_id = Account.C_id;
+-- Left Join
+SELECT Customer.cname, Account.Acc_Type, Account.amount
+FROM Customer 
+LEFT JOIN Account ON Customer.C_id = Account.C_id;
 
--- 3
-SELECT * FROM Customer WHERE city = (SELECT city FROM Customer WHERE cname = 'pooja');
+-- Right Join
+SELECT Customer.cname, Account.Acc_Type, Account.amount
+FROM Customer 
+RIGHT JOIN Account ON Customer.C_id = Account.C_id;
 
--- Add more queries for questions 4, 5, 6, and 7 as per the document.
+-- Query 3: Display information of customers living in the same city as ‘Pooja’
+SELECT * 
+FROM Customer 
+WHERE city = (SELECT city FROM Customer WHERE cname = 'Pooja');
+
+-- Query 4: Display account information with less amount than average bank amount
+SELECT * 
+FROM Account 
+WHERE amount < (SELECT AVG(amount) FROM Account);
+
+-- Query 5: Display C_id with maximum amount in account
+SELECT C_id 
+FROM Account 
+WHERE amount = (SELECT MAX(amount) FROM Account);
+
+-- Query 6: Display amount and Acc_Type of customers with the minimum amount for each Acc_Type
+SELECT Acc_Type, amount 
+FROM Account 
+WHERE (Acc_Type, amount) IN (
+    SELECT Acc_Type, MIN(amount)
+    FROM Account
+    GROUP BY Acc_Type
+);
+
+-- Query 7: Display amount of accounts with amount higher than any saving account amount
+SELECT amount 
+FROM Account 
+WHERE amount > ANY (SELECT amount FROM Account WHERE Acc_Type = 'saving');
+
