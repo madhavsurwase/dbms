@@ -1,19 +1,78 @@
-use your_database;  // replace 'your_database' with your database name
+// Create the database and use it
+use cityDatabase;
 
-db.city.mapReduce(
-    function() { emit(this.state, parseInt(this.population)); },
-    function(key, values) { return Array.sum(values); },
-    { out: "statewise_population" }
-);
+// Create the collection and insert sample data
+db.createCollection("city");
 
-db.city.mapReduce(
-    function() { emit(this.city, parseInt(this.population)); },
-    function(key, values) { return Array.sum(values); },
-    { out: "citywise_population" }
-);
+db.city.insertMany([
+  { city: "Pune", type: "urban", state: "MH", population: 5600000 },
+  { city: "Mumbai", type: "urban", state: "MH", population: 12400000 },
+  { city: "Nagpur", type: "urban", state: "MH", population: 2500000 },
+  { city: "Chennai", type: "urban", state: "TN", population: 7000000 },
+  { city: "Coimbatore", type: "urban", state: "TN", population: 1500000 },
+  { city: "Bangalore", type: "urban", state: "KA", population: 9000000 },
+  { city: "Mysore", type: "urban", state: "KA", population: 1000000 }
+]);
 
-db.city.mapReduce(
-    function() { emit(this.type, parseInt(this.population)); },
-    function(key, values) { return Array.sum(values); },
-    { out: "typewise_population" }
-);
+// MapReduce for Statewise Population
+var mapState = function() {
+  emit(this.state, this.population);  // Group by state and emit population
+};
+
+var reduceState = function(key, values) {
+  return Array.sum(values);  // Sum the populations for each state
+};
+
+db.city.mapReduce(mapState, reduceState, { out: "statePopulation" });
+
+// Check the result for Statewise Population
+print("Statewise Population:");
+db.statePopulation.find().forEach(printjson);
+
+// MapReduce for Citywise Population
+var mapCity = function() {
+  emit(this.city, this.population);  // Group by city and emit population
+};
+
+var reduceCity = function(key, values) {
+  return Array.sum(values);  // Sum the populations for each city
+};
+
+db.city.mapReduce(mapCity, reduceCity, { out: "cityPopulation" });
+
+// Check the result for Citywise Population
+print("Citywise Population:");
+db.cityPopulation.find().forEach(printjson);
+
+// MapReduce for Typewise Population
+var mapType = function() {
+  emit(this.type, this.population);  // Group by type and emit population
+};
+
+var reduceType = function(key, values) {
+  return Array.sum(values);  // Sum the populations for each type
+};
+
+db.city.mapReduce(mapType, reduceType, { out: "typePopulation" });
+
+// Check the result for Typewise Population
+print("Typewise Population:");
+db.typePopulation.find().forEach(printjson);
+
+// Aggregation for Statewise Population
+print("Aggregation for Statewise Population:");
+db.city.aggregate([
+  { $group: { _id: "$state", totalPopulation: { $sum: "$population" } } }
+]).forEach(printjson);
+
+// Aggregation for Citywise Population
+print("Aggregation for Citywise Population:");
+db.city.aggregate([
+  { $group: { _id: "$city", totalPopulation: { $sum: "$population" } } }
+]).forEach(printjson);
+
+// Aggregation for Typewise Population
+print("Aggregation for Typewise Population:");
+db.city.aggregate([
+  { $group: { _id: "$type", totalPopulation: { $sum: "$population" } } }
+]).forEach(printjson);
