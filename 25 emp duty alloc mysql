@@ -1,0 +1,74 @@
+-- Create the Empl table
+CREATE TABLE Empl (
+    e_no INT PRIMARY KEY,
+    e_name VARCHAR(100) NOT NULL,
+    post VARCHAR(100),
+    pay_rate DECIMAL(10, 2)
+);
+
+-- Create the Position table
+CREATE TABLE `Position` (
+    pos_no INT PRIMARY KEY,
+    post VARCHAR(100)
+);
+
+-- Create the Duty-alloc table without foreign keys initially
+CREATE TABLE Duty_alloc (
+    pos_no INT,
+    e_no INT,
+    month VARCHAR(20),
+    year INT,
+    shift INT,
+    PRIMARY KEY (pos_no, e_no) -- Composite primary key
+);
+
+-- Adding foreign key constraints separately
+ALTER TABLE Duty_alloc
+    ADD CONSTRAINT fk_pos_no FOREIGN KEY (pos_no) REFERENCES `Position`(pos_no),
+    ADD CONSTRAINT fk_e_no FOREIGN KEY (e_no) REFERENCES Empl(e_no);
+
+-- Inserting sample data into the Empl table
+INSERT INTO Empl (e_no, e_name, post, pay_rate) VALUES
+(123, 'Sachin', 'Manager', 50000),
+(124, 'Rahul', 'Developer', 45000),
+(125, 'Amit', 'Manager', 55000),
+(126, 'Vikram', 'Developer', 40000);
+
+-- Inserting sample data into the Position table
+INSERT INTO `Position` (pos_no, post) VALUES
+(1, 'Manager'),
+(2, 'Developer');
+
+-- Inserting sample data into the Duty-alloc table
+INSERT INTO Duty_alloc (pos_no, e_no, month, year, shift) VALUES
+(1, 123, 'April', 2003, 1),
+(1, 124, 'April', 2003, 2),
+(2, 125, 'April', 2003, 1),
+(2, 126, 'April', 2003, 2);
+
+-- i. Get duty allocation details for e_no 123 for the first shift in the month of April 2003
+SELECT * FROM Duty_alloc
+WHERE e_no = 123 AND shift = 1 AND month = 'April' AND year = 2003;
+
+-- ii. Get the employees whose rate of pay is >= rate of pay of employees 'Sachin'
+SELECT * FROM Empl
+WHERE pay_rate >= (SELECT pay_rate FROM Empl WHERE e_name = 'Sachin');
+
+-- iii. Create a view for displaying minimum, maximum, and average salary for all the posts
+CREATE VIEW Salary_View AS
+SELECT post, 
+       MIN(pay_rate) AS min_salary, 
+       MAX(pay_rate) AS max_salary, 
+       AVG(pay_rate) AS avg_salary
+FROM Empl
+GROUP BY post;
+
+-- To view the created view
+SELECT * FROM Salary_View;
+
+-- iv. Get count of different employees on each shift having post ‘Manager’
+SELECT shift, COUNT(DISTINCT e_no) AS employee_count
+FROM Duty_alloc DA
+JOIN Empl E ON DA.e_no = E.e_no
+WHERE E.post = 'Manager'
+GROUP BY shift;
