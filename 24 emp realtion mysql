@@ -1,0 +1,79 @@
+-- Creating the Emp table
+CREATE TABLE Emp (
+    emp_id INT PRIMARY KEY,
+    ename VARCHAR(100) NOT NULL,
+    street VARCHAR(255),
+    city VARCHAR(100)
+);
+
+-- Creating the Company table
+CREATE TABLE Company (
+    c_id INT PRIMARY KEY,
+    cname VARCHAR(100) NOT NULL,
+    city VARCHAR(100)
+);
+
+-- Creating the works table
+CREATE TABLE works (
+    emp_id INT,
+    c_id INT,
+    ename VARCHAR(100),
+    cname VARCHAR(100),
+    sal DECIMAL(10, 2),
+    PRIMARY KEY (emp_id, c_id),
+    FOREIGN KEY (emp_id) REFERENCES Emp(emp_id),
+    FOREIGN KEY (c_id) REFERENCES Company(c_id)
+);
+
+-- Creating the Manager table
+CREATE TABLE Manager (
+    mgr_id INT PRIMARY KEY,
+    mgrname VARCHAR(100),
+    emp_id INT,
+    FOREIGN KEY (emp_id) REFERENCES Emp(emp_id)
+);
+
+-- Inserting sample data into Emp table
+INSERT INTO Emp (emp_id, ename, street, city) VALUES
+(1, 'John Doe', '123 Main St', 'Mumbai'),
+(2, 'Jane Smith', '456 Oak St', 'Pune'),
+(3, 'Jim Brown', '789 Pine St', 'Chennai');
+
+-- Inserting sample data into Company table
+INSERT INTO Company (c_id, cname, city) VALUES
+(1, 'ABC', 'Pune'),
+(2, 'Mbank', 'Mumbai'),
+(3, 'Bosch', 'Pune');
+
+-- Inserting sample data into works table
+INSERT INTO works (emp_id, c_id, ename, cname, sal) VALUES
+(1, 1, 'John Doe', 'ABC', 45000),
+(2, 2, 'Jane Smith', 'Mbank', 55000),
+(3, 3, 'Jim Brown', 'Bosch', 60000);
+
+-- Inserting sample data into Manager table
+INSERT INTO Manager (mgr_id, mgrname, emp_id) VALUES
+(1, 'Michael Manager', 1),
+(2, 'David Manager', 2);
+
+-- i. Modify the database so that a particular company (eg. ABC) now in Pune
+UPDATE Company 
+SET city = 'Pune'
+WHERE cname = 'ABC';
+
+-- ii. Give all managers of Mbank a 10% raise
+UPDATE works
+SET sal = sal * 1.1
+WHERE c_id = (SELECT c_id FROM Company WHERE cname = 'Mbank') AND emp_id IN (SELECT emp_id FROM Manager);
+
+-- iii. Find out the names of all the employees who work in ‘Bosch’ company in city Pune
+SELECT E.ename
+FROM Emp E
+JOIN works W ON E.emp_id = W.emp_id
+JOIN Company C ON W.c_id = C.c_id
+WHERE C.cname = 'Bosch' AND C.city = 'Pune';
+
+-- iv. Delete all records in the works table for employees of a particular company (Eg, SBC Company) whose salary > 50,000
+DELETE FROM works
+WHERE c_id = (SELECT c_id FROM Company WHERE cname = 'SBC') AND sal > 50000;
+
