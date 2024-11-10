@@ -1,4 +1,51 @@
--- Given Tables: student, instructor, course
+-- Creating student table
+CREATE TABLE student (
+    S_ID INT PRIMARY KEY,
+    name VARCHAR(100),
+    dept_name VARCHAR(100),
+    tot_cred INT
+);
+
+-- Creating instructor table
+CREATE TABLE instructor (
+    T_ID INT PRIMARY KEY,
+    name VARCHAR(100),
+    dept_name VARCHAR(100),
+    salary DECIMAL(10, 2)
+);
+
+-- Creating course table
+CREATE TABLE course (
+    course_id INT PRIMARY KEY,
+    title VARCHAR(100),
+    dept_name VARCHAR(100),
+    credits INT
+);
+
+-- Inserting sample data into student table
+INSERT INTO student (S_ID, name, dept_name, tot_cred) VALUES
+(1, 'Alice', 'Computer', 120),
+(2, 'Bob', 'Mathematics', 80),
+(3, 'Charlie', 'Computer', 100),
+(4, 'David', 'Electrical', 95),
+(5, 'Eve', 'Computer', 110);
+
+-- Inserting sample data into instructor table
+INSERT INTO instructor (T_ID, name, dept_name, salary) VALUES
+(1, 'Amol', 'Computer', 45000.00),
+(2, 'Amit', 'Computer', 42000.00),
+(3, 'John', 'Electrical', 35000.00),
+(4, 'Mary', 'Computer', 48000.00),
+(5, 'Sarah', 'Mathematics', 40000.00);
+
+-- Inserting sample data into course table
+INSERT INTO course (course_id, title, dept_name, credits) VALUES
+(1, 'DBMS', 'Computer', 4),
+(2, 'Calculus', 'Mathematics', 3),
+(3, 'Electronics', 'Electrical', 3),
+(4, 'Data Structures', 'Computer', 4),
+(5, 'Linear Algebra', 'Mathematics', 3);
+
 
 -- 1. Average salary of instructors in departments with avg salary > 42000
 SELECT dept_name, AVG(salary) AS avg_salary
@@ -26,3 +73,4 @@ SELECT student.name
 FROM student
 JOIN course ON student.dept_name = course.dept_name
 WHERE student.dept_name = 'computer' AND course.title = 'DBMS';
+
