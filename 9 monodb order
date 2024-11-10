@@ -1,11 +1,36 @@
-// Collection: orderinfo
-use your_database;  // replace 'your_database' with your database name
+mongo
 
-// Queries
+use customerDB  // Replace 'customerDB' with your desired database name
+
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: "abc", status: "A", price: 250 },
+  { cust_id: 124, cust_name: "xyz", status: "A", price: 500 },
+  { cust_id: 125, cust_name: "lmn", status: "B", price: 150 },
+  { cust_id: 126, cust_name: "pqr", status: "A", price: 300 }
+])
+
+// i. Find the Average Price for Each Customer Having Status 'A'
 db.orderinfo.aggregate([
-    { $match: { status: "A" } },
-    { $group: { _id: "$cust_id", avgPrice: { $avg: "$price" } } }
-]);
+  { $match: { status: "A" } },
+  {
+    $group: {
+      _id: "$cust_id",
+      avgPrice: { $avg: "$price" }
+    }
+  }
+])
 
-db.orderinfo.find({ price: { $gt: 100, $lt: 1000 } }, { _id: 0 });
-db.orderinfo.createIndex({ cust_id: 1 });
+// ii. Display the Status of Customers Whose Amount/Price is Between 100 and 1000
+db.orderinfo.find(
+  { price: { $gte: 100, $lte: 1000 } },
+  { status: 1, _id: 0 }
+)
+
+// iii. Display Customer Information Without "_id"
+db.orderinfo.find(
+  {},
+  { _id: 0 }
+)
+
+// iv. Create a Simple Index on the "status" Field in orderinfo Collection
+db.orderinfo.createIndex({ status: 1 })
