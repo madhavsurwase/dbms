@@ -1,11 +1,58 @@
+// 1. Create the department database
 use department;
+
+// 2. Create the teacher collection and insert sample documents
 db.createCollection("teacher");
 
-// Aggregation
-db.teacher.aggregate([{ $group: { _id: "$department", avgSalary: { $avg: "$salary" } } }]);
-db.teacher.aggregate([{ $group: { _id: "$department", count: { $sum: 1 } } }]);
-db.teacher.aggregate([{ $group: { _id: "$department", minSalary: { $min: "$salary" } } }]);
+db.teacher.insertMany([
+  { name: "Alice", department: "HR", experience: 5, salary: 50000 },
+  { name: "Bob", department: "IT", experience: 7, salary: 75000 },
+  { name: "Charlie", department: "HR", experience: 3, salary: 45000 },
+  { name: "David", department: "IT", experience: 10, salary: 90000 },
+  { name: "Eva", department: "Finance", experience: 6, salary: 60000 },
+  { name: "Fay", department: "Finance", experience: 2, salary: 40000 },
+  { name: "Grace", department: "HR", experience: 4, salary: 55000 },
+  { name: "Hannah", department: "IT", experience: 8, salary: 85000 }
+]);
 
-// Indexing
-db.teacher.createIndex({ name: 1 });
-db.teacher.dropIndex("name_1");
+// 3. Display the department-wise average salary
+db.teacher.aggregate([
+  {
+    $group: {
+      _id: "$department", 
+      averageSalary: { $avg: "$salary" }
+    }
+  }
+]);
+
+// 4. Display the number of employees working in each department
+db.teacher.aggregate([
+  {
+    $group: {
+      _id: "$department", 
+      numEmployees: { $sum: 1 }
+    }
+  }
+]);
+
+// 5. Display the department-wise minimum salary
+db.teacher.aggregate([
+  {
+    $group: {
+      _id: "$department", 
+      minSalary: { $min: "$salary" }
+    }
+  }
+]);
+
+// 6. Apply an index on the department field
+db.teacher.createIndex({ department: 1 });
+
+// To verify that the index has been created
+db.teacher.getIndexes();
+
+// Drop the index created on the department field
+db.teacher.dropIndex({ department: 1 });
+
+// Verify if the index has been dropped
+db.teacher.getIndexes();
