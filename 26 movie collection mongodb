@@ -1,0 +1,64 @@
+// 1. Create the collection and insert documents
+use myDatabase;  // Switch to your desired database
+
+db.createCollection("movies");  // Create the 'movies' collection
+
+db.movies.insertMany([
+  { 
+    name: "Movie1", 
+    type: "action", 
+    budget: 1000000, 
+    producer: { name: "producer1", address: "PUNE" }
+  },
+  { 
+    name: "Movie2", 
+    type: "comedy", 
+    budget: 500000, 
+    producer: { name: "producer2", address: "MUMBAI" }
+  },
+  { 
+    name: "Movie3", 
+    type: "action", 
+    budget: 2000000, 
+    producer: { name: "producer1", address: "PUNE" }
+  },
+  { 
+    name: "Movie4", 
+    type: "drama", 
+    budget: 1500000, 
+    producer: { name: "producer3", address: "DELHI" }
+  }
+]);
+
+// 2. Find the name of the movie having budget greater than 1,00,000
+print("Movies with budget greater than 1,00,000:");
+db.movies.find(
+  { budget: { $gt: 1000000 } },
+  { name: 1, _id: 0 }
+).forEach(printjson);
+
+// 3. Find the name of the producer who lives in Pune
+print("Producers living in Pune:");
+db.movies.find(
+  { "producer.address": "PUNE" },
+  { "producer.name": 1, _id: 0 }
+).forEach(printjson);
+
+// 4. Update the type of movie "action" to "horror"
+db.movies.updateMany(
+  { type: "action" },
+  { $set: { type: "horror" } }
+);
+
+// 5. Find all the documents produced by name "producer1" with their address
+print("Movies produced by producer1 with their address:");
+db.movies.find(
+  { "producer.name": "producer1" },
+  { name: 1, "producer.address": 1, _id: 0 }
+).forEach(printjson);
+
+// 6. Write any query using aggregate function: Find average budget of all movies by type
+print("Average budget by movie type:");
+db.movies.aggregate([
+  { $group: { _id: "$type", averageBudget: { $avg: "$budget" } } }
+]).forEach(printjson);
