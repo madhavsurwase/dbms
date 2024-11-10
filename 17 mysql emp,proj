@@ -1,14 +1,97 @@
--- Employee queries
-SELECT DISTINCT location FROM Employee;
-SELECT MAX(salary), MIN(salary) FROM Employee;
-SELECT * FROM Employee ORDER BY salary;
-SELECT name FROM Employee WHERE city IN ('Nasik', 'Pune');
-SELECT name FROM Employee WHERE commission IS NULL;
-UPDATE Employee SET city = 'Nashik' WHERE name = 'Amit';
-SELECT * FROM Employee WHERE name LIKE 'A%';
-SELECT COUNT(*) FROM Employee WHERE city = 'Mumbai';
-SELECT city, COUNT(*) FROM Employee GROUP BY city;
-SELECT DISTINCT city FROM (SELECT city FROM Employee UNION SELECT city FROM Project);
-SELECT city, MIN(salary) FROM Employee GROUP BY city;
-SELECT city, MAX(salary) FROM Employee GROUP BY city HAVING MAX(salary) > 26000;
-DELETE FROM Employee WHERE salary > 30000;
+-- Create Employee table
+CREATE TABLE Employee (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100) NOT NULL,
+    emp_salary DECIMAL(10, 2) CHECK (emp_salary >= 0),
+    emp_city VARCHAR(100) NOT NULL,
+    commission DECIMAL(10, 2) DEFAULT 0
+);
+
+-- Create Project table
+CREATE TABLE Project (
+    project_id INT PRIMARY KEY,
+    project_name VARCHAR(100) NOT NULL,
+    project_city VARCHAR(100) NOT NULL
+);
+
+-- Inserting sample data into Employee table
+INSERT INTO Employee (emp_id, emp_name, emp_salary, emp_city, commission) VALUES
+(1, 'Amit', 28000, 'Mumbai', 2000),
+(2, 'Raj', 35000, 'Nasik', 5000),
+(3, 'Ravi', 25000, 'Pune', NULL),
+(4, 'Suman', 18000, 'Nasik', NULL),
+(5, 'Geeta', 22000, 'Pune', 1500),
+(6, 'Nisha', 32000, 'Mumbai', 3000),
+(7, 'Anil', 37000, 'Delhi', 4000),
+(8, 'Kiran', 15000, 'Nasik', NULL),
+(9, 'Mohan', 40000, 'Pune', NULL),
+(10, 'Asha', 15000, 'Mumbai', 1000);
+
+-- Inserting sample data into Project table
+INSERT INTO Project (project_id, project_name, project_city) VALUES
+(101, 'Project A', 'Mumbai'),
+(102, 'Project B', 'Nasik'),
+(103, 'Project C', 'Pune'),
+(104, 'Project D', 'Delhi');
+
+-- 1. Find different locations from where employees belong to
+SELECT DISTINCT emp_city
+FROM Employee;
+
+-- 2. What is maximum and minimum salary?
+SELECT MAX(emp_salary) AS Maximum_Salary, MIN(emp_salary) AS Minimum_Salary
+FROM Employee;
+
+-- 3. Display the content of employee table according to the ascending order of salary amount
+SELECT * FROM Employee
+ORDER BY emp_salary ASC;
+
+-- 4. Find the name of employee who lived in Nasik or Pune city
+SELECT emp_name
+FROM Employee
+WHERE emp_city IN ('Nasik', 'Pune');
+
+-- 5. Find the name of employees who do not get commission
+SELECT emp_name
+FROM Employee
+WHERE commission IS NULL;
+
+-- 6. Change the city of Amit to Nashik
+UPDATE Employee
+SET emp_city = 'Nashik'
+WHERE emp_name = 'Amit';
+
+-- 7. Find the information of employees whose name starts with ‘A’
+SELECT * FROM Employee
+WHERE emp_name LIKE 'A%';
+
+-- 8. Find the count of staff from Mumbai
+SELECT COUNT(*) AS Staff_Count
+FROM Employee
+WHERE emp_city = 'Mumbai';
+
+-- 9. Find the count of staff from each city
+SELECT emp_city, COUNT(*) AS Staff_Count
+FROM Employee
+GROUP BY emp_city;
+
+-- 10. Find the address from where employees are belonging as well as where projects are going on
+SELECT DISTINCT e.emp_city AS Employee_City, p.project_city AS Project_City
+FROM Employee e
+JOIN Project p ON e.emp_city = p.project_city;
+
+-- 11. Find city-wise minimum salary
+SELECT emp_city, MIN(emp_salary) AS Min_Salary
+FROM Employee
+GROUP BY emp_city;
+
+-- 12. Find city-wise maximum salary having maximum salary greater than 26000
+SELECT emp_city, MAX(emp_salary) AS Max_Salary
+FROM Employee
+GROUP BY emp_city
+HAVING MAX(emp_salary) > 26000;
+
+-- 13. Delete the employee who is having salary greater than 30,000
+DELETE FROM Employee
+WHERE emp_salary > 30000;
+
