@@ -1,10 +1,38 @@
+-- Create table emp with specified constraints
 CREATE TABLE emp (
-    Eno INT PRIMARY KEY AUTO_INCREMENT,
-    Ename VARCHAR(50) NOT NULL,
+    Eno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Ename VARCHAR(100) NOT NULL,
     Address VARCHAR(100) DEFAULT 'Nashik',
-    Joindate DATE,
-    Post VARCHAR(50)
+    Joindate DATE NOT NULL,
+    Salary DECIMAL(10, 2) NOT NULL
 );
-INSERT INTO emp (Ename, Joindate) VALUES ('John', '2023-04-01');
+
+-- In MySQL, we use AUTO_INCREMENT instead of sequences for primary keys.
+-- Insert sample data into the emp table
+INSERT INTO emp (Ename, Address, Joindate, Salary) VALUES
+('Amit', 'Mumbai', '2022-06-01', 30000),
+('Raj', 'Pune', '2023-01-15', 25000),
+('Ravi', 'Nasik', '2021-07-30', 22000),
+('Geeta', 'Nagpur', '2022-12-05', 35000),
+('Nisha', 'Nashik', '2021-09-10', 28000);
+
+-- Add the Post field to the emp table
+ALTER TABLE emp ADD COLUMN Post VARCHAR(100);
+
+-- Insert data into the Post field
+UPDATE emp SET Post = 'Manager' WHERE Eno = 1;
+UPDATE emp SET Post = 'Assistant' WHERE Eno = 2;
+UPDATE emp SET Post = 'Clerk' WHERE Eno = 3;
+UPDATE emp SET Post = 'Supervisor' WHERE Eno = 4;
+UPDATE emp SET Post = 'Officer' WHERE Eno = 5;
+
+-- Create index on the Ename field
 CREATE INDEX idx_ename ON emp(Ename);
-CREATE VIEW emp_view AS SELECT Ename, Salary FROM emp;
+
+-- Create a View to show only Ename and Salary
+CREATE VIEW emp_salary_view AS
+SELECT Ename, Salary
+FROM emp;
+
+-- To check if the view works
+SELECT * FROM emp_salary_view;
