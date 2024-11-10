@@ -1,0 +1,43 @@
+// 1. Create the collection and insert documents
+use myDatabase;  // Switch to your desired database
+
+db.createCollection("orderinfo");  // Create the orderinfo collection
+
+db.orderinfo.insertMany([
+  { cust_id: 123, cust_name: 'abc', status: 'A', price: 250 },
+  { cust_id: 124, cust_name: 'def', status: 'B', price: 300 },
+  { cust_id: 125, cust_name: 'ghi', status: 'A', price: 450 },
+  { cust_id: 126, cust_name: 'jkl', status: 'C', price: 200 },
+  { cust_id: 127, cust_name: 'mno', status: 'A', price: 350 }
+]);
+
+// 2. Display the name of the customer having the price between 250 and 450
+print("Customers with price between 250 and 450:");
+db.orderinfo.find(
+  { price: { $gte: 250, $lte: 450 } },
+  { cust_name: 1, _id: 0 }
+).forEach(printjson);
+
+// 3. Increment the price by 10 for cust_id: 123 and decrement the price by 5 for cust_id: 124
+db.orderinfo.updateOne(
+  { cust_id: 123 },
+  { $inc: { price: 10 } }
+);
+db.orderinfo.updateOne(
+  { cust_id: 124 },
+  { $inc: { price: -5 } }
+);
+
+// 4. Remove any one of the field from the orderinfo collection (example: remove the status field)
+db.orderinfo.updateMany(
+  {},
+  { $unset: { status: "" } }  // This will remove the 'status' field from all documents
+);
+
+// 5. Find the name of the customer whose status is either 'A' or price is 250 or both
+print("Customers whose status is A or price is 250 or both:");
+db.orderinfo.find(
+  { $or: [{ status: 'A' }, { price: 250 }] },
+  { cust_name: 1, _id: 0 }
+).forEach(printjson);
+
